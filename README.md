@@ -1,50 +1,105 @@
-# Welcome to your Expo app 👋
+# 🏧 ATM Monitoring Mobile App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+![Expo](https://img.shields.io/badge/Expo-000020?logo=expo\&logoColor=white)
+![React Native](https://img.shields.io/badge/React%20Native-20232A?logo=react\&logoColor=61DAFB)
+![NativeWind](https://img.shields.io/badge/NativeWind-Tailwind-blue)
+![Status](https://img.shields.io/badge/status-learning-orange)
 
-## Get started
+---
 
-1. Install dependencies
+## 📱 About the Project
 
-   ```bash
-   npm install
-   ```
+This project is a **React Native mobile application** built using the Expo framework.
+The purpose of this project is **purely for learning and exploration**, especially to understand how to build scalable mobile applications using modern tools.
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## 🎯 Purpose
 
-In the output, you'll find options to open the app in a
+This project is created for:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+* Learning **React Native with Expo**
+* Practicing **mobile UI design**
+* Understanding **state management and data flow**
+* Building a **scalable folder structure**
+* Implementing **real-world dashboard features**
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+> ⚠️ This is **not a production-ready application**. It is a personal learning project.
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## 🛠️ Tech Stack
 
-```bash
-npm run reset-project
+* ⚛️ React Native
+* 🚀 Expo
+* 🎨 NativeWind (Tailwind CSS for React Native)
+* 📦 Expo Router
+* 🧠 Custom Hooks
+
+---
+
+## 📂 Project Structure
+
+```
+.
+├── app/                # Expo Router pages
+├── components/         # Reusable UI components
+├── hooks/              # Custom hooks
+├── utils/              # Helper functions
+├── services/           # API layer (future)
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## 🚀 Getting Started
 
-To learn more about developing your project with Expo, look at the following resources:
+### Install dependencies
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```
+npm install
+```
 
-## Join the community
+### Start the app
 
-Join our community of developers creating universal apps.
+```
+npx expo start
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Run on device
+
+* Press `i` → iOS Simulator
+* Press `a` → Android Emulator
+* Or scan QR using Expo Go
+
+---
+
+## 📌 Features
+
+* Login Screen UI
+* Dashboard with summary cards
+* Device status filtering
+* Responsive mobile layout
+* Navigation with Expo Router
+
+---
+
+## 🔮 Future Improvements
+
+* API integration (real backend)
+* Real-time monitoring
+* Device detail screen
+* Authentication system
+* Charts & analytics
+
+---
+
+## 🙋‍♂️ Author
+
+This project is created for learning purposes.
+Feel free to explore and improve it!
+
+---
+
+## ⭐ Notes
+
+If you find this project useful, feel free to give it a ⭐ on GitHub!
