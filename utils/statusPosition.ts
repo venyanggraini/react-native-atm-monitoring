@@ -1,7 +1,7 @@
 export const STATUS_POSITION = {
     green: ['NORMAL', 'OK', 'ONLINE'],
     yellow: ['WARNING', 'LOW', 'NEAR_FULL', 'OFFLINE'],
-    red: ['ERROR', 'EMPTY', 'FULL', 'DISCONNECTED']
+    red: ['ERROR', 'EMPTY', 'FULL', 'OUT_OF_SERVICE']
 };
 
 export const getStatusPosition = (status: string) => {

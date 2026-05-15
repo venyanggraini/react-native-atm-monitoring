@@ -2,7 +2,7 @@ import SafeScreenComponent from '@/components/SafeScreenComponent';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 
 export default function Index() {
     const router = useRouter();
@@ -23,11 +23,14 @@ export default function Index() {
     return (
         <SafeScreenComponent>
             <KeyboardAvoidingView 
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                keyboardVerticalOffset={120}
                 className="flex-1" 
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <ScrollView
-                        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center'}}
                         keyboardShouldPersistTaps="handled"
+                        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center'}}
                     >
                         <View className="justify-center">
                             {/* Title */}
@@ -87,6 +90,7 @@ export default function Index() {
                             </TouchableOpacity>
                         </View>
                     </ScrollView>
+                </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
         </SafeScreenComponent>  
     );

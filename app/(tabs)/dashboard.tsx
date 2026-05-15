@@ -2,8 +2,7 @@ import HeaderComponent from "@/components/HeaderComponent";
 import SafeScreenComponent from "@/components/SafeScreenComponent";
 import SummaryStatusCardComponent from "@/components/SummaryStatusCardComponent";
 import useDashboard from "@/hooks/useDashboard";
-import { useRouter } from "expo-router";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
 export default function Dashboard() {
     const {
@@ -25,7 +24,7 @@ export default function Dashboard() {
                 </View>
 
                 
-                <SummaryStatusCardComponent title="ATM Status" data={atmStatus} type="atm_status"/>
+                <SummaryStatusCardComponent title="ATM Status" data={atmStatus} type="atmStatus"/>
                 <SummaryStatusCardComponent title="Cash Remaining" data={cashStatus} type="cash"/>
                 <SummaryStatusCardComponent title="Receipt Printer" data={printerStatus} type="printer"/>
                 <SummaryStatusCardComponent title="Card Reader" data={cardReaderStatus} type="cardReader"/>

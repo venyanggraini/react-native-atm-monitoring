@@ -11,7 +11,7 @@ export const STATUS_COLOR: Record<string, string>= {
   FULL: '#ef4444',
   ERROR: '#ef4444',
   EMPTY: '#ef4444',
-  DISCONNECTED: '#ef4444',
+  OUT_OF_SERVICE: '#ef4444',
 };
 
 export const getStatusColor = (status: string) => {

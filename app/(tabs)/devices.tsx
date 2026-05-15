@@ -5,12 +5,13 @@ import useDeviceFilters from "@/hooks/useDeviceFilters";
 import { fetchATMs } from "@/services/atmService";
 import { getStatusColor } from "@/utils/statusColor";
 import { STATUS_OPTIONS } from "@/utils/statusOptions";
-import { useEffect, useMemo, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useMemo, useState } from "react";
 import { FlatList, Modal, Text, TouchableOpacity, View } from "react-native";
 
 interface ATM {
     id: string | number;
-    atm_status: string;
+    atmStatus: string;
     cash: string;
     printer: string;
     cardReader: string;
@@ -20,14 +21,17 @@ export default function Devices() {
     const [showAlert, setShowAlert] = useState(false);
 
     const [data, setData] = useState<ATM[]>([]);
-    useEffect(() => {
-            const loadData = async () => {
-                const atmData = await fetchATMs();
-                setData(atmData);
-            };
-    
-            loadData();
-        }, []);
+
+    const fetchDevices = async () => {
+        const result = await fetchATMs();
+        setData(result);
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchDevices();
+        }, [])
+    );
 
     const [activeFilter, setActiveFilter] = useState<
         'atm' | 'device' | 'status' | null
@@ -90,7 +94,7 @@ export default function Devices() {
                                 {item.id}
                             </Text>
                         </View>
-                        <DeviceRow label="ATM Status" value={item.atm_status} />
+                        <DeviceRow label="ATM Status" value={item.atmStatus} />
                         <DeviceRow label="Cash Remaining" value={item.cash} />
                         <DeviceRow label="Receipt Printer" value={item.printer} />
                         <DeviceRow label="Card Reader" value={item.cardReader} />
@@ -112,7 +116,7 @@ export default function Devices() {
                             <FlatList 
                                 data={
                                     activeFilter === 'atm' ? atmOptions :
-                                    activeFilter === 'device' ? [ 'atm_status', 'cash', 'printer', 'cardReader' ] :
+                                    activeFilter === 'device' ? [ 'atmStatus', 'cash', 'printer', 'cardReader' ] :
                                     statusOptions
                                 }
                                 renderItem={({ item }: { item: string }) => (
