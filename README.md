@@ -85,8 +85,8 @@ npx expo start
 
 ## 🔮 Future Improvements
 
-* API integration (real backend)
-* Real-time monitoring
+* API integration (real backend) ✅
+* Real-time monitoring 
 * Device detail screen
 * Authentication system
 * Charts & analytics
