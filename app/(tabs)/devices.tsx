@@ -3,55 +3,79 @@ import HeaderComponent from "@/components/HeaderComponent";
 import SafeScreenComponent from "@/components/SafeScreenComponent";
 import useDeviceFilters from "@/hooks/useDeviceFilters";
 import { fetchATMs } from "@/services/atmService";
+import { ATM, ATMFilter } from "@/types/atm";
+import { buildFilter } from "@/utils/filterBuilder";
 import { getStatusColor } from "@/utils/statusColor";
 import { STATUS_OPTIONS } from "@/utils/statusOptions";
-import { useFocusEffect } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, Modal, Text, TouchableOpacity, View } from "react-native";
 
-interface ATM {
-    id: string | number;
-    atmStatus: string;
-    cash: string;
-    printer: string;
-    cardReader: string;
-}
 
 export default function Devices() {
     const [showAlert, setShowAlert] = useState(false);
-
     const [data, setData] = useState<ATM[]>([]);
-
-    const fetchDevices = async () => {
-        const result = await fetchATMs();
-        setData(result);
-    };
-
-    useFocusEffect(
-        useCallback(() => {
-            fetchDevices();
-        }, [])
-    );
-
-    const [activeFilter, setActiveFilter] = useState<
-        'atm' | 'device' | 'status' | null
-    >(null);
+    const [activeFilter, setActiveFilter] = useState<'atm' | 'device' | 'status' | null>(null);
 
     const {
         selectedATM, setSelectedATM,
         deviceType, setDeviceType,
         status, setStatus,
-        filteredData, clearFilters,
-    } = useDeviceFilters(data);
+        clearFilters,
+    } = useDeviceFilters();
+
+    const params = useLocalSearchParams();
+    const paramsRef = useRef(params);
+    paramsRef.current = params;
+
+    const filtersRef = useRef<ATMFilter | undefined>(undefined);
+    filtersRef.current = buildFilter(selectedATM, deviceType, status);
+
+    const fetchDevices = async (filters?: ATMFilter) => {
+        const result = await fetchATMs(filters);
+        setData(result);
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            const { type, status: stat, atm } = paramsRef.current;
+            const t = Array.isArray(type) ? type[0] : (type ?? '');
+            const s = Array.isArray(stat) ? stat[0] : (stat ?? '');
+            const a = Array.isArray(atm) ? atm[0] : (atm ?? '');
+            fetchDevices(t || s || a ? buildFilter(a, t, s) : filtersRef.current);
+        }, [])
+    );
+
+    const handleSelectATM = (atm: string) => {
+        setSelectedATM(atm);
+        fetchDevices(buildFilter(atm, deviceType, status));
+        closeModal();
+    };
+
+    const handleSelectDeviceType = (device: string) => {
+        setDeviceType(device);
+        setStatus('');
+        fetchDevices(buildFilter(selectedATM, device, ''));
+        closeModal();
+    };
+
+    const handleSelectStatus = (stat: string) => {
+        setStatus(stat);
+        fetchDevices(buildFilter(selectedATM, deviceType, stat));
+        closeModal();
+    };
+
+    const handleClearFilters = () => {
+        clearFilters();
+        fetchDevices(undefined);
+    };
 
     const atmOptions = useMemo(() => {
-        return [...new Set(data.map((item) => String(item.id)))]
+        return [...new Set(data.map((item) => item.atmId))]
     }, [data]);
 
-    const statusOptions = deviceType
-        ? STATUS_OPTIONS[deviceType] || []
-        : [];
-    
+    const statusOptions = deviceType ? STATUS_OPTIONS[deviceType] || [] : [];
+
     const closeModal = () => setActiveFilter(null);
 
     return (
@@ -73,7 +97,7 @@ export default function Devices() {
                     disabled={!deviceType}
                 />
                 <TouchableOpacity
-                    onPress={clearFilters}
+                    onPress={handleClearFilters}
                     className="bg-rex-500 px-3 py-2 rounded-xl"
                 >
                     <Text className="text-white text-sm font-semibold">
@@ -83,21 +107,21 @@ export default function Devices() {
             </View>
 
             <FlatList
-                data={filteredData || []}
+                data={data}
                 extraData={[selectedATM, deviceType, status]}
-                keyExtractor={( item ) => String(item.id)}
+                keyExtractor={(item) => String(item.atmId)}
                 contentContainerStyle={{ paddingBottom: 20 }}
                 renderItem={({ item }) => (
                     <View className="bg-gray-800 p-4 rounded-xl mb-3">
                         <View className="bg-gray-800 mb-2 items-center">
                             <Text className="text-white font-semibold text-lg">
-                                {item.id}
+                                {item.atmId}
                             </Text>
                         </View>
                         <DeviceRow label="ATM Status" value={item.atmStatus} />
-                        <DeviceRow label="Cash Remaining" value={item.cash} />
-                        <DeviceRow label="Receipt Printer" value={item.printer} />
-                        <DeviceRow label="Card Reader" value={item.cardReader} />
+                        <DeviceRow label="Cash Remaining" value={item.cashRemainingStatus} />
+                        <DeviceRow label="Receipt Printer" value={item.receiptPrinterStatus} />
+                        <DeviceRow label="Card Reader" value={item.cardReaderStatus} />
                     </View>
                 )}
             />
@@ -116,7 +140,7 @@ export default function Devices() {
                             <FlatList 
                                 data={
                                     activeFilter === 'atm' ? atmOptions :
-                                    activeFilter === 'device' ? [ 'atmStatus', 'cash', 'printer', 'cardReader' ] :
+                                    activeFilter === 'device' ? [ 'atmStatus', 'cashRemainingStatus', 'receiptPrinterStatus', 'cardReaderStatus' ] :
                                     statusOptions
                                 }
                                 renderItem={({ item }: { item: string }) => (
@@ -124,16 +148,13 @@ export default function Devices() {
                                         label={item}
                                         onPress={() => {
                                             if (activeFilter === 'atm') {
-                                                setSelectedATM(item);
-                                                closeModal();
+                                                handleSelectATM(item);
                                             };
                                             if (activeFilter === 'device') {
-                                                setDeviceType(item as keyof ATM);
-                                                closeModal();
+                                                handleSelectDeviceType(item);
                                             };
                                             if (activeFilter === 'status') {
-                                                setStatus(item);
-                                                closeModal();
+                                                handleSelectStatus(item);
                                             }
                                         }}
                                     />

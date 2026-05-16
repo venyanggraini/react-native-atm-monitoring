@@ -1,42 +1,28 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function useDeviceFilters(data: any[]) {
+const parseParam = (val: string | string[] | undefined): string =>
+    val ? (Array.isArray(val) ? val[0] : val) : '';
+
+export default function useDeviceFilters() {
     const router = useRouter();
     const params = useLocalSearchParams();
 
-    const [selectedATM, setSelectedATM] = useState('');
-    const [deviceType, setDeviceType] = useState('');
-    const [status, setStatus] = useState('');
+    const [selectedATM, setSelectedATM] = useState(() => parseParam(params.atm));
+    const [deviceType, setDeviceType] = useState(() => parseParam(params.type));
+    const [status, setStatus] = useState(() => parseParam(params.status));
 
+    // Keeps state in sync when params change on an already-mounted screen
     useEffect(() => {
-        setDeviceType(params.type ? Array.isArray(params.type) ? params.type[0] : params.type : '');
-        setStatus(params.status ? Array.isArray(params.status) ? params.status[0] : params.status : '');
-        setSelectedATM(params.atm ? Array.isArray(params.atm) ? params.atm[0] : params.atm : '');
+        setSelectedATM(parseParam(params.atm));
+        setDeviceType(parseParam(params.type));
+        setStatus(parseParam(params.status));
     }, [params.type, params.status, params.atm]);
-
-
-    const filteredData = useMemo(() => {
-        return data.filter((item) => {
-            const matchATM = selectedATM 
-                ? String(item.id).toLowerCase() === String(selectedATM).toLowerCase()
-                : true;
-            
-            const matchStatus = (deviceType && status)
-                ? String(item[deviceType].toLowerCase()) === String(status.toLowerCase())
-                : deviceType 
-                ? item.hasOwnProperty(deviceType)
-                : true
-
-            return matchATM && matchStatus;
-        });
-    }, [data, selectedATM, deviceType, status]);
 
     const clearFilters = () => {
         setSelectedATM('');
         setDeviceType('');
         setStatus('');
-
         router.setParams({ type: '', status: '', atm: '' });
     };
 
@@ -44,6 +30,6 @@ export default function useDeviceFilters(data: any[]) {
         selectedATM, setSelectedATM,
         deviceType, setDeviceType,
         status, setStatus,
-        filteredData, clearFilters,
+        clearFilters,
     };
 }

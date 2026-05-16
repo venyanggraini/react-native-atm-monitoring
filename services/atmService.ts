@@ -1,23 +1,28 @@
 import { ATMFilter } from '@/types/atm';
-import axios from 'axios';
-import { BASE_URL } from './api';
+import logger from '@/utils/logger';
+import apiClient from './api';
+
+const ATM_URL = `/v1/atm`;
+const TAG = 'AtmService';
 
 export const fetchATMs = async (filters?: ATMFilter) => {
-  const { data } = await axios.post(
-    `${BASE_URL}/devices`,
-    filters || {}, 
+  logger.info(TAG, 'Fetching ATMs', filters ?? 'no filters');
+  const { data } = await apiClient.post(
+    `${ATM_URL}/devices`,
+    filters || {},
     {
-        headers: {
-        'Content-Type': 'application/json',
-        },
+      headers: { 'Content-Type': 'application/json' },
     }
   );
 
-  return data.map((item: any) => ({
-    id: item.atmId,
+  const result = data.map((item: any) => ({
+    atmId: item.atmId,
     atmStatus: item.atmStatus,
-    cash: item.cashRemainingStatus,
-    printer: item.receiptPrinterStatus,
-    cardReader: item.cardReaderStatus,
+    cashRemainingStatus: item.cashRemainingStatus,
+    receiptPrinterStatus: item.receiptPrinterStatus,
+    cardReaderStatus: item.cardReaderStatus,
   }));
+
+  logger.info(TAG, `Fetched ${result.length} ATM(s)`);
+  return result;
 };

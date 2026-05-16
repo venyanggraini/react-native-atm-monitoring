@@ -25,9 +25,9 @@ export default function Dashboard() {
 
                 
                 <SummaryStatusCardComponent title="ATM Status" data={atmStatus} type="atmStatus"/>
-                <SummaryStatusCardComponent title="Cash Remaining" data={cashStatus} type="cash"/>
-                <SummaryStatusCardComponent title="Receipt Printer" data={printerStatus} type="printer"/>
-                <SummaryStatusCardComponent title="Card Reader" data={cardReaderStatus} type="cardReader"/>
+                <SummaryStatusCardComponent title="Cash Remaining" data={cashStatus} type="cashRemainingStatus"/>
+                <SummaryStatusCardComponent title="Receipt Printer" data={printerStatus} type="receiptPrinterStatus"/>
+                <SummaryStatusCardComponent title="Card Reader" data={cardReaderStatus} type="cardReaderStatus"/>
             </ScrollView>
         </SafeScreenComponent>
     );

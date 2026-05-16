@@ -1,14 +1,7 @@
 import { fetchATMs } from "@/services/atmService";
+import { ATM } from "@/types/atm";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-
-interface ATM {
-    id: string;
-    atmStatus: string;
-    cash: string;
-    printer: string;
-    cardReader: string;
-}
 
 const countByStatus = <T, K extends keyof T>(data: T[], key: K) => {
     const result: Record<string, number>= {};
@@ -29,7 +22,7 @@ export default function useDashboard() {
             setData(result);
     }
 
-    useFocusEffect(
+    useFocusEffect (
         useCallback(() => {
             fetchDashboard();
         }, [])
@@ -38,8 +31,8 @@ export default function useDashboard() {
     return {
         totalATM: data.length,
         atmStatus: countByStatus(data, 'atmStatus'),
-        cashStatus: countByStatus(data, 'cash'),
-        printerStatus: countByStatus(data, 'printer'),
-        cardReaderStatus: countByStatus(data, 'cardReader'),
+        cashStatus: countByStatus(data, 'cashRemainingStatus'),
+        printerStatus: countByStatus(data, 'receiptPrinterStatus'),
+        cardReaderStatus: countByStatus(data, 'cardReaderStatus'),
     };
 }

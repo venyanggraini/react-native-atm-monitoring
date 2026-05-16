@@ -1,8 +1,10 @@
+import AlertModal from '@/components/AlertModal';
 import SafeScreenComponent from '@/components/SafeScreenComponent';
+import { login } from '@/services/authService';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 
 export default function Index() {
     const router = useRouter();
@@ -10,14 +12,26 @@ export default function Index() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         if (!username || !password) {
-            alert('Please enter username and password');
+            setError('Please enter username and password');
             return;
         }
 
-        router.replace('/dashboard');
+        setError('')
+        setLoading(true)
+
+        try {
+            await login(username, password);
+            router.replace('/dashboard');
+        } catch (e: any) {
+            setError(e?.response?.data?.message || e?.message || 'Login failed. Please try again');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -82,16 +96,27 @@ export default function Index() {
                             {/* Login Button */}
                             <TouchableOpacity
                                 onPress={handleLogin}
-                                className="bg-blue-500 py-3 rounded-xl"
+                                disabled={loading}
+                                className="bg-blue-500 py-3 rounded-xl items-center"
                             >
-                                <Text className="text-white text-center font-semibold text-lg">
-                                    Login
-                                </Text>
+                                {loading ? (
+                                    <ActivityIndicator color="#ffffff" />
+                                ) : (
+                                    <Text className="text-white text-center font-semibold text-lg">
+                                        Login
+                                    </Text>
+                                )}
                             </TouchableOpacity>
                         </View>
                     </ScrollView>
                 </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
-        </SafeScreenComponent>  
+            <AlertModal
+                visible={!!error}
+                title="Login Failed"
+                message={error}
+                onConfirm={() => setError('')}
+            />
+        </SafeScreenComponent>
     );
 }

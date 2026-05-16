@@ -12,10 +12,12 @@ export type DeviceHealth =
   | 'WARNING'
   | 'ERROR';
 
-export interface ATMFilter {
+export interface ATM {
     atmId?: string;
     atmStatus?: ATMStatus;
     cashRemainingStatus?: DeviceHealth;
     cardReaderStatus?: DeviceHealth;
     receiptPrinterStatus?: DeviceHealth;
 }
+
+export type ATMFilter = Partial<ATM>;
