@@ -46,7 +46,9 @@ This project is created for:
 ├── components/         # Reusable UI components
 ├── hooks/              # Custom hooks
 ├── utils/              # Helper functions
-├── services/           # API layer (future)
+├── services/           # API layer
+├── types/              # Definitions, interfaces, and data models
+├── utils/              # Reusable helper functions and logic
 ```
 
 ---
@@ -87,8 +89,8 @@ npx expo start
 
 * API integration (real backend) ✅
 * Real-time monitoring 
-* Device detail screen
-* Authentication system
+* Filter by Device screen  ✅
+* Authentication system  ✅
 * Charts & analytics
 
 ---
