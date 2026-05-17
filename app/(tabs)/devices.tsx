@@ -13,8 +13,8 @@ import { FlatList, Modal, Text, TouchableOpacity, View } from "react-native";
 
 
 export default function Devices() {
-    const [showAlert, setShowAlert] = useState(false);
     const [data, setData] = useState<ATM[]>([]);
+    const [error, setError] = useState('');
     const [activeFilter, setActiveFilter] = useState<'atm' | 'device' | 'status' | null>(null);
 
     const {
@@ -32,8 +32,12 @@ export default function Devices() {
     filtersRef.current = buildFilter(selectedATM, deviceType, status);
 
     const fetchDevices = async (filters?: ATMFilter) => {
-        const result = await fetchATMs(filters);
-        setData(result);
+        try {
+            const result = await fetchATMs(filters);
+            setData(result)
+        } catch (e: any) {
+            setError(e?.response?.data?.message || e?.message || 'Failed to load devices');
+        }
     };
 
     useFocusEffect(
@@ -71,7 +75,7 @@ export default function Devices() {
     };
 
     const atmOptions = useMemo(() => {
-        return [...new Set(data.map((item) => item.atmId))]
+        return [...new Set(data.map((item) => item.atmId).filter((id): id is string => !!id))]
     }, [data]);
 
     const statusOptions = deviceType ? STATUS_OPTIONS[deviceType] || [] : [];
@@ -118,10 +122,10 @@ export default function Devices() {
                                 {item.atmId}
                             </Text>
                         </View>
-                        <DeviceRow label="ATM Status" value={item.atmStatus} />
-                        <DeviceRow label="Cash Remaining" value={item.cashRemainingStatus} />
-                        <DeviceRow label="Receipt Printer" value={item.receiptPrinterStatus} />
-                        <DeviceRow label="Card Reader" value={item.cardReaderStatus} />
+                        <DeviceRow label="ATM Status" value={item.atmStatus ?? ''} />
+                        <DeviceRow label="Cash Remaining" value={item.cashRemainingStatus ?? ''} />
+                        <DeviceRow label="Receipt Printer" value={item.receiptPrinterStatus ?? ''} />
+                        <DeviceRow label="Card Reader" value={item.cardReaderStatus ?? ''} />
                     </View>
                 )}
             />
@@ -165,10 +169,10 @@ export default function Devices() {
                 </TouchableOpacity>
             </Modal>
             <AlertModal
-                visible={showAlert}
-                title="Select Device Required"
-                message="Please select a Device before proceeding."
-                onConfirm={() => setShowAlert(false)}
+                visible={!!error}
+                title="Failed to Load Data"
+                message={error}
+                onConfirm={() => setError('')}
             />
         </SafeScreenComponent>
     );

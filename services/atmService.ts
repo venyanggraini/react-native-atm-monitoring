@@ -1,28 +1,12 @@
-import { ATMFilter } from '@/types/atm';
+import { ATM, ATMFilter } from '@/types/atm';
 import logger from '@/utils/logger';
-import apiClient from './api';
+import api from './api';
 
-const ATM_URL = `/v1/atm`;
 const TAG = 'AtmService';
 
-export const fetchATMs = async (filters?: ATMFilter) => {
+export const fetchATMs = async (filters?: ATMFilter): Promise<ATM[]> => {
   logger.info(TAG, 'Fetching ATMs', filters ?? 'no filters');
-  const { data } = await apiClient.post(
-    `${ATM_URL}/devices`,
-    filters || {},
-    {
-      headers: { 'Content-Type': 'application/json' },
-    }
-  );
-
-  const result = data.map((item: any) => ({
-    atmId: item.atmId,
-    atmStatus: item.atmStatus,
-    cashRemainingStatus: item.cashRemainingStatus,
-    receiptPrinterStatus: item.receiptPrinterStatus,
-    cardReaderStatus: item.cardReaderStatus,
-  }));
-
+  const result = await api.post<ATM[]>(`/v1/atm/devices`, filters ?? {});
   logger.info(TAG, `Fetched ${result.length} ATM(s)`);
   return result;
 };

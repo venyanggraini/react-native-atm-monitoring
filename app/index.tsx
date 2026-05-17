@@ -2,12 +2,13 @@ import AlertModal from '@/components/AlertModal';
 import SafeScreenComponent from '@/components/SafeScreenComponent';
 import { login } from '@/services/authService';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 
 export default function Index() {
     const router = useRouter();
+    const { sessionExpired } = useLocalSearchParams<{ sessionExpired?: string }>();
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -111,6 +112,12 @@ export default function Index() {
                     </ScrollView>
                 </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
+            <AlertModal
+                visible={!!sessionExpired}
+                title="Session Expired"
+                message="Your session has expired. Please log in again."
+                onConfirm={() => router.setParams({ sessionExpired: undefined })}
+            />
             <AlertModal
                 visible={!!error}
                 title="Login Failed"

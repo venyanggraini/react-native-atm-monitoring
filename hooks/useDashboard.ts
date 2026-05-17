@@ -16,13 +16,18 @@ const countByStatus = <T, K extends keyof T>(data: T[], key: K) => {
 
 export default function useDashboard() {
     const [data, setData] = useState<ATM[]>([]);
+    const [error, setError] = useState('');
 
     const fetchDashboard = async () => {
-         const result = await fetchATMs();
+        try {
+            const result = await fetchATMs();
             setData(result);
-    }
+        } catch (e: any) {
+            setError(e?.response?.data?.message || e?.message || 'Failed to load dashboard data');
+        }
+    };
 
-    useFocusEffect (
+    useFocusEffect(
         useCallback(() => {
             fetchDashboard();
         }, [])
@@ -34,5 +39,7 @@ export default function useDashboard() {
         cashStatus: countByStatus(data, 'cashRemainingStatus'),
         printerStatus: countByStatus(data, 'receiptPrinterStatus'),
         cardReaderStatus: countByStatus(data, 'cardReaderStatus'),
+        error,
+        clearError: () => setError(''),
     };
 }
